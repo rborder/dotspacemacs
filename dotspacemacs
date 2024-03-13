@@ -42,6 +42,7 @@ This function should only modify configuration layer settings."
      bibtex
      colors
      deft
+     latex
      ;; better-defaults
      emacs-lisp
      ;; git
@@ -601,7 +602,29 @@ before packages are loaded."
   ;; (global-set-key (kbd "C-c") 'clipboard-kill-ring-save)
   ;; (global-set-key (kbd "C-x") 'clipboard-kill-region)
   ;; (global-set-key (kbd "C-v") 'clipboard-yank)
-  (defun my-old-carryover (old_carryover)
+  (setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"☐\"|TODO=\"⧖\"|TODO=\"⧗\"|TODO=\"?\"")
+;; (defun my-modified-carryover (old_carryover)
+;;   (save-excursion
+;;     (let ((active-todo-keywords '("TODO" "⧖" "⧗" "☐" "?"))) ; List of active TODO states
+;;       (dolist (entry (reverse old_carryover))
+;;         (save-restriction
+;;           (narrow-to-region (car entry) (cadr entry))
+;;           (goto-char (point-min))
+;;           ;; Iterate over all headings in the narrowed region.
+;;           (while (re-search-forward org-todo-line-regexp nil t)
+;;             (let* ((element (org-element-at-point))
+;;                    (todo-keyword (org-element-property :todo-keyword element)))
+;;               ;; Check if the element is an active TODO.
+;;               (when (member todo-keyword active-todo-keywords)
+;;                 ;; This is where you might interact with org-journal's carryover mechanism.
+;;                 ;; For example, by tagging active TODOs for carryover. This example
+;;                 ;; simply tags them; adjust according to your needs.
+;;                 (org-set-tags ":carried:")
+;;                 ;; Skip subitems by moving to the end of the current subtree,
+;;                 ;; assuming you don't want to process completed subitems or
+;;                 ;; non-TODO subelements as part of the carryover.
+;;                 (org-end-of-subtree t)))))))))
+ (defun my-old-carryover (old_carryover)
     (save-excursion
       (let ((matcher (cdr (org-make-tags-matcher org-journal-carryover-items))))
         (dolist (entry (reverse old_carryover))
@@ -612,6 +635,9 @@ before packages are loaded."
                               (org-set-tags ":carried:")
                               )
                            matcher org--matcher-tags-todo-only))))))
+  (setq org-agenda-files nil)
+  (setq org-journal-find-file 'find-file)
+  (setq org-journal-handle-old-carryover 'my-old-carryover)
   (setq deft-directory "~/Dropbox/notes")
   (setq org-modern-todo nil)
   (setq org-journal-dir "~/Dropbox/journal")
@@ -619,7 +645,6 @@ before packages are loaded."
   (setq org-journal-date-format "%02m.%02d.%02y-%3a")
   (setq org-journal-date-prefix "#+title: ")
   ;; (setq org-journal-carryover-items "☐")
-  (setq org-journal-carryover-items "TODO=\"TODO\"|TODO=\"☐\"|TODO=\"⧖\"|TODO=\"⧗\" TODO=\"?\"")
   (setq deft-recursive t)
   (setq deft-new-file-format "%02m.%02d.%02y-%3a")
   (setq org-ellipsis " »»»")
@@ -644,9 +669,8 @@ This function is called at the very end of Spacemacs initialization."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files '("/home/rsb/Dropbox/journal/2024/02.11.24-Sun.org"))
  '(package-selected-packages
-   '(org-modern compat zenburn-theme yasnippet-snippets yapfify ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil toc-org term-cursor symon symbol-overlay string-edit-at-point sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc soft-morning-theme restart-emacs request rainbow-mode rainbow-identifiers rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort popwin poetry pippel pipenv pip-requirements pcre2el password-generator paradox pandoc-mode overseer org-superstar org-rich-yank org-ref org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file occidental-theme nose nameless multi-line mmm-mode material-theme markdown-toc macrostep lorem-ipsum live-py-mode link-hint inspector info+ indent-guide importmagic hybrid-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-descbinds helm-company helm-c-yasnippet helm-bibtex helm-ag google-translate golden-ratio gnuplot gh-md fuzzy flyspell-correct-helm flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs deft define-word cython-mode company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-identifiers-mode code-cells clean-aindent-mode centered-cursor-mode blacken auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile all-the-icons aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
+   '(auctex-latexmk company-auctex company-math company-reftex evil-tex auctex math-symbol-lists org-modern compat zenburn-theme yasnippet-snippets yapfify ws-butler writeroom-mode winum which-key volatile-highlights vim-powerline vi-tilde-fringe uuidgen use-package undo-tree treemacs-projectile treemacs-persp treemacs-icons-dired treemacs-evil toc-org term-cursor symon symbol-overlay string-edit-at-point sphinx-doc spacemacs-whitespace-cleanup spacemacs-purpose-popwin spaceline space-doc soft-morning-theme restart-emacs request rainbow-mode rainbow-identifiers rainbow-delimiters quickrun pytest pylookup pyenv-mode pydoc py-isort popwin poetry pippel pipenv pip-requirements pcre2el password-generator paradox pandoc-mode overseer org-superstar org-rich-yank org-ref org-projectile org-present org-pomodoro org-mime org-download org-contrib org-cliplink open-junk-file occidental-theme nose nameless multi-line mmm-mode material-theme markdown-toc macrostep lorem-ipsum live-py-mode link-hint inspector info+ indent-guide importmagic hybrid-mode hungry-delete holy-mode hl-todo highlight-parentheses highlight-numbers highlight-indentation hide-comnt helm-xref helm-themes helm-swoop helm-pydoc helm-purpose helm-projectile helm-org-rifle helm-org helm-mode-manager helm-make helm-descbinds helm-company helm-c-yasnippet helm-bibtex helm-ag google-translate golden-ratio gnuplot gh-md fuzzy flyspell-correct-helm flycheck-package flycheck-elsa flx-ido fancy-battery eyebrowse expand-region evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-textobj-line evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-evilified-state evil-escape evil-easymotion evil-collection evil-cleverparens evil-args evil-anzu eval-sexp-fu emr elisp-slime-nav elisp-def editorconfig dumb-jump drag-stuff dotenv-mode dired-quick-sort diminish devdocs deft define-word cython-mode company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-identifiers-mode code-cells clean-aindent-mode centered-cursor-mode blacken auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile all-the-icons aggressive-indent ace-link ace-jump-helm-line ac-ispell)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
